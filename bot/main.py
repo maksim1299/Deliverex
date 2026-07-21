@@ -19,7 +19,7 @@ from .antispam import AntiSpam
 from .config import Config, load_config
 from .db import Database
 from .handlers import build_router
-from .middlewares import AntiSpamMiddleware, UserTrackingMiddleware
+from .middlewares import AntiSpamMiddleware, PrivateChatGuardMiddleware, UserTrackingMiddleware
 
 log = logging.getLogger(__name__)
 
@@ -73,6 +73,7 @@ def build_dispatcher(db: Database, cfg: Config, antispam: AntiSpam) -> Dispatche
     # один экземпляр на оба типа апдейтов — счётчики флуда должны быть общими
     spam_guard = AntiSpamMiddleware(db, cfg, antispam)
     dp.message.outer_middleware(UserTrackingMiddleware(db))
+    dp.message.outer_middleware(PrivateChatGuardMiddleware(db, cfg))
     dp.message.outer_middleware(spam_guard)
     dp.edited_message.outer_middleware(spam_guard)
 

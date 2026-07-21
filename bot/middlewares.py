@@ -76,6 +76,37 @@ class UserTrackingMiddleware(BaseMiddleware):
         return await handler(event, data)
 
 
+class PrivateChatGuardMiddleware(BaseMiddleware):
+    """В личке бот работает только с менеджером. Остальным не отвечает."""
+
+    def __init__(self, db: Database, cfg: Config) -> None:
+        self.db = db
+        self.cfg = cfg
+
+    async def __call__(
+        self,
+        handler: Callable[[TelegramObject, dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
+        data: dict[str, Any],
+    ) -> Any:
+        if not isinstance(event, Message) or event.chat.type != "private":
+            return await handler(event, data)
+
+        user = event.from_user
+        if user is None or user.is_bot:
+            return None
+
+        bot: Bot = data["bot"]
+        is_manager = (
+            user.id in self.cfg.admin_ids
+            or (user.username or "").lower() == self.cfg.manager_username.lower()
+            or await is_privileged(bot, self.db, self.cfg, user.id, event.chat.id)
+        )
+        if is_manager:
+            return await handler(event, data)
+        return None  # обычным пользователям в личке не отвечаем
+
+
 class AntiSpamMiddleware(BaseMiddleware):
     """Проверяет сообщения в группе. Спам удаляется и до обработчиков не доходит."""
 

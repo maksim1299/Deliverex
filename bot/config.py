@@ -113,7 +113,7 @@ def load_config() -> Config:
     if not dsn:
         raise RuntimeError("DATABASE_URL не задан. На Railway используйте ${{Postgres.DATABASE_URL}}.")
 
-    manager = _str("MANAGER_USERNAME", "kurotoplol").lstrip("@")
+    manager = _str("MANAGER_USERNAME", "mms1299").lstrip("@")
 
     return Config(
         bot_token=token,
