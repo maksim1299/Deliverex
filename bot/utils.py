@@ -124,6 +124,9 @@ async def resolve_manager_chats(db: Database, cfg: Config) -> list[int]:
     for chat_id in await db.manager_chat_ids():
         if chat_id not in targets:
             targets.append(chat_id)
+    # Карточка заявки уходит только в личку менеджеру/админу. Групповые чаты
+    # (у них отрицательный chat_id) исключаем, чтобы её не видели клиенты в группе.
+    targets = [chat_id for chat_id in targets if chat_id > 0]
     if not targets:
         # крайний случай — шлём первому админу из .env
         targets.extend(sorted(cfg.admin_ids)[:1])
