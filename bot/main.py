@@ -41,6 +41,7 @@ ADMIN_COMMANDS = USER_COMMANDS + [
     BotCommand(command="spam_add", description="Добавить стоп-слово"),
     BotCommand(command="spam_del", description="Отключить правило"),
     BotCommand(command="setmanager", description="Слать заявки в этот чат"),
+    BotCommand(command="post", description="Пост в группу от имени бота (/соо)"),
     BotCommand(command="id", description="ID чата и пользователя"),
 ]
 

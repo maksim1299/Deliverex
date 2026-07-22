@@ -3,12 +3,13 @@ from __future__ import annotations
 
 from aiogram import Router
 
-from . import common, leads, moderation, welcome
+from . import broadcast, common, leads, moderation, welcome
 
 
 def build_router() -> Router:
     root = Router(name="root")
     root.include_router(common.router)      # /start, /help, /id, /setmanager
+    root.include_router(broadcast.router)   # /соо — пост от имени бота в группу
     root.include_router(moderation.router)  # админские команды
     root.include_router(welcome.router)     # вход/выход участников
     root.include_router(leads.router)       # заявки — последними, ловят обычный текст
